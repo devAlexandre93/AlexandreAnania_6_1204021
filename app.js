@@ -1,12 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const path = require('path');
+const helmet = require('helmet');
+const session = require('cookie-session')
+
+require('dotenv').config();
 
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
 
-mongoose.connect('mongodb+srv://devAlexandre93:buLFtYYgGQLDdz5Z@cluster0.tky6h.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-  { useNewUrlParser: true,
+mongoose.connect(process.env.DB_URI,
+  { useCreateIndex: true,
+    useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
@@ -20,7 +26,23 @@ app.use((req, res, next) => {
     next();
 });
 
+const expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 heure
+app.use(session({
+  name: 'session',
+  secret: 's3Cur3',
+  cookie: { 
+    secure: true,
+    httpOnly: true,
+    domain: 'http://localhost:3000',
+    expires: expiryDate
+  }
+}));
+
 app.use(bodyParser.json());
+
+app.use(helmet());
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
