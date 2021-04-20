@@ -1,5 +1,9 @@
-const mongoose = require('mongoose');
+// Formation OpenClassrooms - Développeur Web - Projet 6 - Alexandre Anania
 
+const mongoose = require('mongoose'); // Import de 'mongoose'
+
+// Création d'un schéma mongoose pour que les données de la base MongoDB ne puissent pas différer de celles qu l'on a précisé ici
+// L'id est généré automatiquement par MongoDB
 const sauceSchema = mongoose.Schema({
   userId: {type: String, required: true},
   name: {type: String, required: true},
@@ -14,4 +18,5 @@ const sauceSchema = mongoose.Schema({
   usersDisliked: {type: [String], required: true}
 });
 
+// Export
 module.exports = mongoose.model('Sauce', sauceSchema);
